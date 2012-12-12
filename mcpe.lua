@@ -51,6 +51,18 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
     	subtree:add(buffer(30,2),"Client port: " .. buffer(30,2):uint())
     	subtree:add(buffer(32,2),"MTU Size: " .. buffer(32,2):uint())
     	subtree:add(buffer(34,1),"Security: " .. buffer(34,1))
+	elseif (packetID:uint() == 0xa0) then
+		pinfo.cols.info = "NACK Packet: 0xa0"
+		subtree:add(buffer(1,2),"Unknown: " .. buffer(1,2))
+   	 	subtree:add(buffer(3,1),"Additional Packet: " .. buffer(3,1))
+	    if(buffer(3,1):uint() == 0x01) then  
+	        subtree:add(buffer(4,-1),"Packet number: " .. buffer(4,-1):le_uint())
+	    else
+	        pinfo.cols.info:append(" Multiple")
+	        getTime = subtree:add(buffer(4,6),"Multiple nack's") 
+		    getTime:add(buffer(4,3),"Packet number: " .. buffer(4,3):le_uint())
+	        getTime:add(buffer(7,3),"Packet number: " .. buffer(7,3):le_uint())
+	    end
 	elseif (packetID:uint() == 0xc0) then
 		pinfo.cols.info = "ACK Packet: 0xc0"
 		subtree:add(buffer(1,2),"Unknown: " .. buffer(1,2))
