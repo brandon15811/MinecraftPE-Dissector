@@ -83,437 +83,521 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 		i = 0
 		total = 0
 		while i<len do
-			plength = 3 + (data(i+1,2):uint() / 8) + 3
-			if data(i,1):uint() == 0x40 then
-				if data(i+6,1):uint() == 0x82 then
-					part = subtree:add(data(i,plength),"LoginPacket")
-					dataStart(part,data,i)
-					
-					slength = data(i+7,2):uint()
-					getString(part,data,i+7)
-					part:add(data(i+9+slength,4), "Int: " .. data(i+9+slength,4))
-					part:add(data(i+9+slength+4,4), "Int: " .. data(i+9+slength+4))
-					
-				elseif data(i+6,1):uint() == 0x84 then
-					part = subtree:add(data(i,plength), "ReadyPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,1), "Byte: " .. data(i+7,1))
-					
-				elseif data(i+6,1):uint() == 0x85 then
-					part = subtree:add(data(i,plength), "MessagePacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x86 then
-					part = subtree:add(data(i,plength), "SetTimePacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,2), "Short: " .. data(i+7,2):le_uint())
-					part:add(data(i+9,2), "Short: " .. data(i+9,2):le_uint())
-					
-				elseif data(i+6,1):uint() == 0x87 then
-					part = subtree:add(data(i,plength), "StartGamePacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x88 then
-					part = subtree:add(data(i,plength), "AddMobPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x89 then
-					part = subtree:add(data(i,plength), "AddPlayerPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x8a then
-					part = subtree:add(data(i,plength), "RemovePlayerPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x8c then
-					part = subtree:add(data(i,plength), "AddEntityPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x8d then
-					part = subtree:add(data(i,plength), "RemoveEntityPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Byte: " .. data(i+7,4):uint())
-					
-				elseif data(i+6,1):uint() == 0x8e then
-					part = subtree:add(data(i,plength), "AddItemEntityPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Int: " .. data(i+7,4):uint())
-					part:add(data(i+11,2), "Short: " .. data(i+11,2):uint())
-					part:add(data(i+13,1), "Byte: " .. data(i+13,1):uint())
-					part:add(data(i+14,2), "Short: " .. data(i+14,2):uint())
-					part:add(data(i+16,4), "Float: " .. data(i+16,4):float())
-					part:add(data(i+20,4), "Float: " .. data(i+20,4):float())
-					part:add(data(i+24,4), "Float: " .. data(i+24,4):float())
-					part:add(data(i+28,1), "Byte: " .. data(i+28,1):uint())
-					part:add(data(i+29,1), "Byte: " .. data(i+29,1):uint())
-					part:add(data(i+30,1), "Byte: " .. data(i+30,1):uint())
-					
-				elseif data(i+6,1):uint() == 0x8f then
-					part = subtree:add(data(i,plength), "TakeItemEntityPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Int: " .. data(i+7,4):uint())
-					part:add(data(i+11,4), "Int: " .. data(i+11,4):uint())
-					
-				elseif data(i+6,1):uint() == 0x90 then
-					part = subtree:add(data(i,plength), "MoveEntityPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x93 then
-					part = subtree:add(data(i,plength), "MoveEntityPacket_PosRot")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Int: " .. data(i+7,4):uint())
-					part:add(data(i+11,4), "X: " .. data(i+11,4):float())
-					part:add(data(i+15,4), "Y: " .. data(i+15,4):float())
-					part:add(data(i+19,4), "Z: " .. data(i+19,4):float())
-					part:add(data(i+23,4), "Float: " .. data(i+23,4):float())
-					part:add(data(i+27,4), "Float: " .. data(i+27,4):float())
-					
-					
-				elseif data(i+6,1):uint() == 0x94 then
-					part = subtree:add(data(i,plength), "MovePlayerPacket")
-					dataStart(part,data,i);
-					
-					part:add(buffer(i+7,4), "Unknown: " .. buffer(i+7,4))
-					part:add(buffer(i+11,4), "Pos X: " .. buffer(i+11,4):float())
-					part:add(buffer(i+15,4), "Pos Y: " .. buffer(i+15,4):float())
-					part:add(buffer(i+19,4), "Pos Z: " .. buffer(i+19,4):float())
-					part:add(buffer(i+23,4), "Yaw: " .. buffer(i+23,4):float())
-					part:add(buffer(i+27,4), "Pitch: " .. buffer(i+27,4):float())
-					
-					
-				elseif data(i+6,1):uint() == 0x95 then
-					part = subtree:add(data(i,plength), "PlaceBlockPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Int: " .. data(i+7,4):uint())
-					part:add(data(i+11,4), "Int: " .. data(i+11,4):uint())
-					part:add(data(i+15,4), "Int: " .. data(i+15,4):uint())
-					part:add(data(i+19,1), "Byte: " .. data(i+19,1):uint())
-					part:add(data(i+20,1), "Byte: " .. data(i+20,1):uint())
-					part:add(data(i+21,1), "Byte: " .. data(i+21,1):uint())
-					part:add(data(i+22,1), "Byte: " .. data(i+22,1):uint())
-					
-				elseif data(i+6,1):uint() == 0x96 then
-					part = subtree:add(data(i,plength), "RemoveBlockPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Int: " .. data(i+7,4):uint())
-					part:add(data(i+11,4), "Int: " .. data(i+11,4):uint())
-					part:add(data(i+15,4), "Int: " .. data(i+15,4):uint())
-					part:add(data(i+19,1), "Byte: " .. data(i+19,1):uint())
-					
-				elseif data(i+6,1):uint() == 0x97 then
-					part = subtree:add(data(i,plength), "UpdateBlockPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x98 then
-					part = subtree:add(data(i,plength), "AddPaintingPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x99 then
-					part = subtree:add(data(i,plength), "ExplodePacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x9a then
-					part = subtree:add(data(i,plength), "LevelEventPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x9b then
-					part = subtree:add(data(i,plength), "TileEventPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Int: " .. data(i+7,4):uint())
-					part:add(data(i+11,4), "Int: " .. data(i+11,4):uint())
-					part:add(data(i+15,4), "Int: " .. data(i+15,4):uint())
-					part:add(data(i+19,4), "Int: " .. data(i+19,4):uint())
-					part:add(data(i+23,4), "Int: " .. data(i+23,4):uint())
-					
-				elseif data(i+6,1):uint() == 0x9c then
-					part = subtree:add(data(i,plength), "EntityEventPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Int: " .. data(i+7,4):uint())
-					part:add(data(i+11,4), "Int: " .. data(i+11,4):uint())
-					
-					
-				elseif data(i+6,1):uint() == 0x9d then
-					part = subtree:add(data(i,plength), "RequestChunkPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "X: " .. data(i+7,4):uint())
-					part:add(data(i+11,4), "Z: " .. data(i+11,4):uint())
-					
-				elseif data(i+6,1):uint() == 0x9f then
-					part = subtree:add(data(i,plength), "PlayerEquipmentPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xa0 then
-					part = subtree:add(data(i,plength), "Interactpacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xa1 then
-					part = subtree:add(data(i,plength), "UseItemPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xa2 then
-					part = subtree:add(data(i,plength), "PlayerActionPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xa3 then
-					part = subtree:add(data(i,plength), "SetEntityDataPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xa4 then
-					part = subtree:add(data(i,plength), "SetEntityMotionPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,4), "Int: " .. data(i+7,4):uint())
-					part:add(data(i+11,2), "Short: " .. data(i+11,2):uint())
-					part:add(data(i+13,2), "Short: " .. data(i+13,2):uint())
-					part:add(data(i+15,2), "Short: " .. data(i+15,2):uint())
-					
-				elseif data(i+6,1):uint() == 0xa5 then
-					part = subtree:add(data(i,plength), "SetHealthPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,1), "Byte: " .. data(i+7,1):uint())
-					
-				elseif data(i+6,1):uint() == 0xa6 then
-					part = subtree:add(data(i,plength), "SetSpawnPositionPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xa7 then
-					part = subtree:add(data(i,plength), "AnimatePacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xa8 then
-					part = subtree:add(data(i,plength), "RespawnPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xa9 then
-					part = subtree:add(data(i,plength), "Packet::Packet(void)")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xaa then
-					part = subtree:add(data(i,plength), "DropItemPacket")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,1), "Byte: " .. data(i+7,1):uint())
-					
-				elseif data(i+6,1):uint() == 0xab then
-					part = subtree:add(data(i,plength), "ContainerOpenPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xac then
-					part = subtree:add(data(i,plength), "ContainerClosePacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xad then
-					part = subtree:add(data(i,plength), "ContainerSetSlotPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xae then
-					part = subtree:add(data(i,plength), "ContainerSetDataPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xaf then
-					part = subtree:add(data(i,plength), "ContainerSetContentPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xb0 then
-					part = subtree:add(data(i,plength), "ContainerAckPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xb1 then
-					part = subtree:add(data(i,plength), "ChatPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xb2 then
-					part = subtree:add(data(i,plength), "SignUpdatePacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0xb3 then
-					part = subtree:add(data(i,plength), "AdventureSettingsPacket")
-					dataStart(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				elseif data(i+6,1):uint() == 0x09 then
-					
-					part = subtree:add(data(i,plength), "Unknown")
-					dataStart(part,data,i);
-					
-					part:add(data(i+7,8), "Unknown: " .. data(i+7,8))
-					part:add(data(i+15,8), "Unknown: " .. data(i+15,8))
-					part:add(data(i+23,1), "Unknown: " .. data(i+23,1))
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				else 
-					subtree:add(data(i,plength),"Unknown")
-					pinfo.cols.info:append(" <-- Unknown!!")
-				end
+			iS = i
+			idp = data(i,1):uint()
+			i = i + 1
+			plength = data(i,2):uint() / 8
+			i = i + 2
+			if idp == 0x00 then
+
+			elseif idp == 0x40 then
+				i = i + 3
+			elseif idp == 0x60 then
+				i = i + 7
+			end
+			iX = i
+			
+			if data(i,1):uint() == 0x82 then
+				part = subtree:add(data(i,plength),"LoginPacket")
+				dataStart(part,data,iS,idp)
+				i = i + 1				
+				slength = data(i,2):uint()
+				i = i + 2
+				getString(part,data,i)
+				i = i + slenght
+				part:add(data(i,4), "Int: " .. data(i,4))
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4))
 				
-			elseif data(i,1):uint() == 0x60 then
-				plength = plength + 4
-				if data(i+10,1):uint() == 0x10 then
-					part = subtree:add(data(i,plength), "Unknown")
-					pinfo.cols.info:append(" <-- Unknown!!")
-					dataStart06(part,data,i)
-					
-					part:add(data(i+11,4), "Cookie: " .. data(i+11,4))
-					part:add(data(i+15,1), "Security: " .. data(i+15,1))
-					part:add(data(i+16,2), "Client Port: " .. data(i+16,2):uint())
-					for j=0,9 do
-						part:add(data(i+18+(j*7),7), "Unknown: " .. data(i+18+(j*7),7))
-					end
-					part:add(data(i+88,2), "Unknown: " .. data(i+88,2))
-					part:add(data(i+90,8), "Unknown: " .. data(i+90,8))
-					part:add(data(i+98,8), "Unknown: " .. data(i+98,8))
-					
-				elseif data(i+10,1):uint() == 0x13 then
-					part = subtree:add(data(i,plength), "Unknown")
-					pinfo.cols.info:append(" <-- Unknown!!")
-					dataStart06(part,data,i)
-					
-					part:add(data(i+11,4), "Cookie: " .. data(i+11,4))
-					part:add(data(i+15,1), "Security: " .. data(i+15,1))
-					part:add(data(i+16,2), "Client Port: " .. data(i+16,2):uint())	
-					part:add(data(i+18,5), "Unknown: " .. data(i+18,5))
-					for j=0,8 do
-						part:add(data(i+23+(j*7),7), "Unknown: " .. data(i+23+(j*7),7))
-					end
-					part:add(data(i+86,2), "Unknown: " .. data(i+86,2))
-					part:add(data(i+88,8), "Unknown: " .. data(i+88,8))
-					part:add(data(i+96,8), "Unknown: " .. data(i+96,8))
-					
-				elseif data(i+10,1):uint() == 0x83 then
-					part = subtree:add(data(i,plength), "LoginStatusPacket")
-					dataStart06(part,data,i)
-					
-					part:add(data(i+11,4), "Int: " .. data(i+11,4):uint())
-					
-				elseif data(i+10,1):uint() == 0x86 then
-					part = subtree:add(data(i,plength), "SetTimePacket")
-					dataStart06(part,data,i)
-					
-					part:add(data(i+11,2), "Short: " .. data(i+11,2):uint())	
-					part:add(data(i+13,2), "Short: " .. data(i+13,2):uint())
-						
-				elseif data(i+10,1):uint() == 0x87 then
-					part = subtree:add(data(i,plength), "StartGamePacket")
-					dataStart06(part,data,i)
-					
-					part:add(data(i+11,4), "Seed: " .. data(i+11,4):uint())	
-					part:add(data(i+15,4), "Unknown: " .. data(i+15,4):uint())
-					part:add(data(i+19,4), "Game Mode: " .. data(i+19,4):uint())
-					part:add(data(i+23,4), "Unknown: " .. data(i+23,4):uint())
-					part:add(data(i+27,4), "X: " .. data(i+27,4):float())
-					part:add(data(i+31,4), "Y: " .. data(i+31,4):float())
-					part:add(data(i+35,4), "Z: " .. data(i+35,4):float())
-					
-				elseif data(i+10,1):uint() == 0x89 then
-					part = subtree:add(data(i,plength), "AddPlayerPacket")
-					dataStart06(part,data,i)
-					
-					part:add(data(i+11,8), "Client iD: " .. data(i+11,8))	
-					slength = data(i+19,2):uint()
-					part:add(data(i+19,2), "Length: " .. slength)
-					part:add(data(i+21,slength), "Name: " .. data(i+21,slength):string())
-					part:add(data(i+21+slength,4), "Unknown: " .. data(i+21+slength,4):uint())
-					part:add(data(i+21+slength+4,4), "X: " .. data(i+21+slength+4,4):float())
-					part:add(data(i+21+slength+8,4), "Y: " .. data(i+21+slength+8,4):float())
-					part:add(data(i+21+slength+12,4), "Z: " .. data(i+21+slength+12,4):float())
-					pinfo.cols.info:append(" <-- Stuff missing!!")
-					
-				elseif data(i+10,1):uint() == 0x9e then
-					part = subtree:add(data(i,plength), "ChunkDataPacket")
-					dataStart06(part,data,i);
-					
-					part:add(data(i+11,4), "Int: " .. data(i+11,4):uint())
-					part:add(data(i+15,4), "Int: " .. data(i+15,4):uint())
-					
-				else
-					part = subtree:add(data(i,plength), "Unknown")
-					dataStart06(part,data,i);
-					
-					pinfo.cols.info:append(" <-- Unknown!!")
-					
-				end
+			elseif data(i,1):uint() == 0x84 then
+				part = subtree:add(data(i,plength), "ReadyPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1				
+				part:add(data(i,1), "Byte: " .. data(i+7,1))
+				i = i + 1
 				
-			elseif data(i,1):uint() == 0x00 then
-				part = subtree:add(data(i,plength-3),"Unknown")
-				plength = plength - 3
-				dataStart00(part,data,i);
-				part:add(data(i+3,1), "Unknown: " .. data(i+3,1):uint())
-				part:add(data(i+4,8), "Unknown: " .. data(i+4,8))
-				if data(i+3,1):uint() == 0x03 then
-					part:add(data(i+12,8), "Unknown: " .. data(i+12,8))
+			elseif data(i,1):uint() == 0x85 then
+				part = subtree:add(data(i,plength), "MessagePacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1				
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x86 then
+				part = subtree:add(data(i,plength), "SetTimePacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,2), "Short: " .. data(i,2):le_uint())
+				i = i + 2
+				part:add(data(i,2), "Short: " .. data(i,2):le_uint())
+				i = i + 2
+				
+			elseif data(i,1):uint() == 0x87 then
+				part = subtree:add(data(i,plength), "StartGamePacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x88 then
+				part = subtree:add(data(i,plength), "AddMobPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x89 then
+				part = subtree:add(data(i,plength), "AddPlayerPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x8a then
+				part = subtree:add(data(i,plength), "RemovePlayerPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x8c then
+				part = subtree:add(data(i,plength), "AddEntityPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x8d then
+				part = subtree:add(data(i,plength), "RemoveEntityPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Byte: " .. data(i,4):uint())
+				i = i + 4
+				
+			elseif data(i,1):uint() == 0x8e then
+				part = subtree:add(data(i,plength), "AddItemEntityPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,2), "Short: " .. data(i,2):uint())
+				i = i + 2
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,2), "Short: " .. data(i,2):uint())
+				i = i + 2
+				part:add(data(i,4), "Float: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Float: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Float: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				
+			elseif data(i,1):uint() == 0x8f then
+				part = subtree:add(data(i,plength), "TakeItemEntityPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				
+			elseif data(i,1):uint() == 0x90 then
+				part = subtree:add(data(i,plength), "MoveEntityPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x93 then
+				part = subtree:add(data(i,plength), "MoveEntityPacket_PosRot")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "X: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Y: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Yaw: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Pitch: " .. data(i,4):float())
+				i = i + 4
+				
+				
+			elseif data(i,1):uint() == 0x94 then
+				part = subtree:add(data(i,plength), "MovePlayerPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(buffer(i,4), "Unknown: " .. buffer(i,4))
+				i = i + 4
+				part:add(buffer(i,4), "Pos X: " .. buffer(i,4):float())
+				i = i + 4
+				part:add(buffer(i,4), "Pos Y: " .. buffer(i,4):float())
+				i = i + 4
+				part:add(buffer(i,4), "Pos Z: " .. buffer(i,4):float())
+				i = i + 4
+				part:add(buffer(i,4), "Yaw: " .. buffer(i,4):float())
+				i = i + 4
+				part:add(buffer(i,4), "Pitch: " .. buffer(i,4):float())
+				i = i + 4
+				
+				
+			elseif data(i,1):uint() == 0x95 then
+				part = subtree:add(data(i,plength), "PlaceBlockPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				
+			elseif data(i,1):uint() == 0x96 then
+				part = subtree:add(data(i,plength), "RemoveBlockPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "X: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,1), "Y: " .. data(i,1):uint())
+				i = i + 1
+				
+			elseif data(i,1):uint() == 0x97 then
+				part = subtree:add(data(i,plength), "UpdateBlockPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x98 then
+				part = subtree:add(data(i,plength), "AddPaintingPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x99 then
+				part = subtree:add(data(i,plength), "ExplodePacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x9a then
+				part = subtree:add(data(i,plength), "LevelEventPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x9b then
+				part = subtree:add(data(i,plength), "TileEventPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				
+			elseif data(i,1):uint() == 0x9c then
+				part = subtree:add(data(i,plength), "EntityEventPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Event: " .. data(i,4):uint())
+				i = i + 4
+				
+				
+			elseif data(i,1):uint() == 0x9d then
+				part = subtree:add(data(i,plength), "RequestChunkPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "X: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):uint())
+				i = i + 4
+				
+			elseif data(i,1):uint() == 0x9f then
+				part = subtree:add(data(i,plength), "PlayerEquipmentPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xa0 then
+				part = subtree:add(data(i,plength), "InteractPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xa1 then
+				part = subtree:add(data(i,plength), "UseItemPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xa2 then
+				part = subtree:add(data(i,plength), "PlayerActionPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xa3 then
+				part = subtree:add(data(i,plength), "SetEntityDataPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xa4 then
+				part = subtree:add(data(i,plength), "SetEntityMotionPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,2), "Short: " .. data(i,2):uint())
+				i = i + 2
+				part:add(data(i,2), "Short: " .. data(i,2):uint())
+				i = i + 2
+				part:add(data(i,2), "Short: " .. data(i,2):uint())
+				i = i + 2
+				
+			elseif data(i,1):uint() == 0xa5 then
+				part = subtree:add(data(i,plength), "SetHealthPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				
+			elseif data(i,1):uint() == 0xa6 then
+				part = subtree:add(data(i,plength), "SetSpawnPositionPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xa7 then
+				part = subtree:add(data(i,plength), "AnimatePacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xa8 then
+				part = subtree:add(data(i,plength), "RespawnPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xa9 then
+				part = subtree:add(data(i,plength), "Packet::Packet(void)")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xaa then
+				part = subtree:add(data(i,plength), "DropItemPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i+7,1), "Byte: " .. data(i+7,1):uint())
+				
+			elseif data(i,1):uint() == 0xab then
+				part = subtree:add(data(i,plength), "ContainerOpenPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xac then
+				part = subtree:add(data(i,plength), "ContainerClosePacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xad then
+				part = subtree:add(data(i,plength), "ContainerSetSlotPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xae then
+				part = subtree:add(data(i,plength), "ContainerSetDataPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xaf then
+				part = subtree:add(data(i,plength), "ContainerSetContentPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xb0 then
+				part = subtree:add(data(i,plength), "ContainerAckPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xb1 then
+				part = subtree:add(data(i,plength), "ChatPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xb2 then
+				part = subtree:add(data(i,plength), "SignUpdatePacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0xb3 then
+				part = subtree:add(data(i,plength), "AdventureSettingsPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x09 then
+				
+				part = subtree:add(data(i,plength), "Unknown")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,8), "Unknown: " .. data(i,8))
+				i = i + 8
+				part:add(data(i,8), "Unknown: " .. data(i,8))
+				i = i + 8
+				part:add(data(i,1), "Unknown: " .. data(i,1))
+				i = i + 1
+				pinfo.cols.info:append(" <-- Unknown!!")
+				
+			elseif data(i,1):uint() == 0x10 then
+				part = subtree:add(data(i,plength), "Unknown")
+				pinfo.cols.info:append(" <-- Unknown!!")
+				dataStart(part,data,iS,idp)
+				i = i + 1
+				part:add(data(i,4), "Cookie: " .. data(i,4))
+				i = i + 4
+				part:add(data(i,1), "Security: " .. data(i,1))
+				i = i + 1
+				part:add(data(i,2), "Client Port: " .. data(i,2):uint())
+				i = i + 2
+				for j=0,9 do
+					part:add(data(i,7), "Unknown: " .. data(i,7))
+					i = i + 7
 				end
+				part:add(data(i,2), "Unknown: " .. data(i,2))
+				i = i + 2
+				part:add(data(i,8), "Unknown: " .. data(i,8))
+				i = i + 8
+				part:add(data(i,8), "Unknown: " .. data(i,8))
+				i = i + 8
+				
+			elseif data(i,1):uint() == 0x13 then
+				part = subtree:add(data(i,plength), "Unknown")
+				pinfo.cols.info:append(" <-- Unknown!!")
+				dataStart(part,data,iS,idp)
+				i = i + 1
+				part:add(data(i,4), "Cookie: " .. data(i,4))
+				i = i + 4
+				part:add(data(i,1), "Security: " .. data(i,1))
+				i = i + 1
+				part:add(data(i,2), "Client Port: " .. data(i,2):uint())	
+				i = i + 2
+				part:add(data(i,5), "Unknown: " .. data(i,5))
+				i = i + 5
+				for j=0,8 do
+					part:add(data(i,7), "Unknown: " .. data(i,7))
+					i = i + 7
+				end
+				part:add(data(i,2), "Unknown: " .. data(i,2))
+				i = i + 2
+				part:add(data(i,8), "Unknown: " .. data(i,8))
+				i = i + 8
+				part:add(data(i,8), "Unknown: " .. data(i,8))
+				i = i + 8
+				
+			elseif data(i,1):uint() == 0x83 then
+				part = subtree:add(data(i,plength), "LoginStatusPacket")
+				dataStart(part,data,iS,idp)
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+			elseif data(i,1):uint() == 0x86 then
+				part = subtree:add(data(i,plength), "SetTimePacket")
+				dataStart(part,data,iS,idp)
+				i = i + 1
+				part:add(data(i,2), "Short: " .. data(i,2):uint())	
+				i = i + 2
+				part:add(data(i,2), "Short: " .. data(i,2):uint())
+				i = i + 2
+					
+			elseif data(i,1):uint() == 0x87 then
+				part = subtree:add(data(i,plength), "StartGamePacket")
+				dataStart(part,data,iS,idp)
+				i = i + 1
+				part:add(data(i,4), "Seed: " .. data(i,4):uint())	
+				i = i + 4
+				part:add(data(i,4), "Unknown: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Game Mode: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Unknown: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "X: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Y: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):float())
+				i = i + 4
+				
+			elseif data(i,1):uint() == 0x89 then
+				part = subtree:add(data(i,plength), "AddPlayerPacket")
+				dataStart(part,data,iS,idp)
+				i = i + 1
+				part:add(data(i,8), "Client iD: " .. data(i,8))	
+				i = i + 8
+				slength = data(i,2):uint()
+				part:add(data(i,2), "Length: " .. slength)
+				i = i + 2
+				part:add(data(i,slength), "Name: " .. data(i,slength):string())
+				i = i + slenght
+				part:add(data(i+slength,4), "Entity ID: " .. data(i+slength,4):uint())
+				i = i + 4
+				part:add(data(i,4), "X: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Y: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):float())
+				i = i + 4
+				pinfo.cols.info:append(" <-- Stuff missing!!")
+				
+			elseif data(i,1):uint() == 0x9e then
+				part = subtree:add(data(i,plength), "ChunkDataPacket")
+				dataStart(part,data,iS,idp);
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				
+			else 
+				part = subtree:add(data(i,plength),"Unknown")
+				dataStart(part,data,iS,idp);
+				i = i + 1
 				pinfo.cols.info:append(" <-- Unknown!!")
 			end
-			i = i + plength
+			i = iX + plength
 			total = total + 1
 		end
 		pinfo.cols.info:append(" (" .. total .. ")")
@@ -528,27 +612,20 @@ function getString(tree,data,i)
 	tree:add(data(i+2,slength), "Name: " .. data(i+2,slength):string())
 end
 
-function dataStart(tree,data,i)
+function dataStart(tree,data,i,idp)
 	tree:add(data(i,1), "Container: " .. data(i,1))
-	length = data(i+1,2):uint() /8
-	tree:add(data(i+1,2), "Data length: " .. length)
-	tree:add(data(i+3,3), "Packet counter: " .. data(i+3,3):le_uint())
-	tree:add(data(i+6,1), "MCPE ID: " .. data(i+6,1))
-end
-
-function dataStart06(tree,data,i)
-	tree:add(data(i,1), "Container: " .. data(i,1))
-	length = data(i+1,2):uint() /8
-	tree:add(data(i+1,2), "Data length: " .. length)
-	tree:add(data(i+3,3), "Packet counter: " .. data(i+3,3):le_uint())
-	tree:add(data(i+6,4), "Unknown: " .. data(i+6,4):le_uint())
-	tree:add(data(i+10,1), "MCPE ID: " .. data(i+10,1))
-end
-
-function dataStart00(tree,data,i)
-	tree:add(data(i,1), "Container: " .. data(i,1))
-	length = data(i+1,2):uint() /8 
-	tree:add(data(i+1,2), "Data length: " .. length)
+	tree:add(data(i+1,2), "Data length: " .. plength)
+	if data(i,1):uint() == 0x00 then
+		i = i + 3
+	elseif data(i,1):uint() == 0x40 then
+		tree:add(data(i+3,3), "Packet counter: " .. data(i+3,3):le_uint())
+		i = i + 6
+	elseif data(i,1):uint() == 0x60 then
+		tree:add(data(i+3,3), "Packet counter: " .. data(i+3,3):le_uint())
+		tree:add(data(i+6,4), "Unknown: " .. data(i+6,4):le_uint())
+		i = i + 10
+	end
+	tree:add(data(i,1), "MCPE ID: " .. data(i,1))
 end
 
 udp_table = DissectorTable.get("udp.port")
