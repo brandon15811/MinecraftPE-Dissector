@@ -101,9 +101,8 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				dataStart(part,data,iS,idp)
 				i = i + 1				
 				slength = data(i,2):uint()
-				i = i + 2
 				getString(part,data,i)
-				i = i + slenght
+				i = i + slength + 2
 				part:add(data(i,4), "Int: " .. data(i,4))
 				i = i + 4
 				part:add(data(i,4), "Int: " .. data(i,4))
