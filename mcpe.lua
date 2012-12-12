@@ -47,10 +47,9 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 		pinfo.cols.info = "ID_OPEN_CONNECTION_REPLY_2: 0x08"
 		subtree:add(buffer(1,16),"Magic: " .. buffer(1,16))
     	subtree:add(buffer(17,8),"Server ID: " .. buffer(17,8))
-    	subtree:add(buffer(25,5),"Security + Cookie: " .. buffer(25,5))
-    	subtree:add(buffer(30,2),"Client port: " .. buffer(30,2):uint())
-    	subtree:add(buffer(32,2),"MTU Size: " .. buffer(32,2):uint())
-    	subtree:add(buffer(34,1),"Security: " .. buffer(34,1))
+    	subtree:add(buffer(25,2),"Client port: " .. buffer(25,2):uint())
+    	subtree:add(buffer(27,2),"MTU Size: " .. buffer(27,2):uint())
+    	subtree:add(buffer(29,1),"Security: " .. buffer(29,1))
 	elseif (packetID:uint() == 0xa0) then
 		pinfo.cols.info = "NACK Packet: 0xa0"
 		subtree:add(buffer(1,2),"Unknown: " .. buffer(1,2))
