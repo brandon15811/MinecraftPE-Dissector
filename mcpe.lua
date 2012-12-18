@@ -628,3 +628,6 @@ end
 
 udp_table = DissectorTable.get("udp.port")
 udp_table:add(19132,mcpe_proto)
+udp_table:add(19133,mcpe_proto)
+udp_table:add(19134,mcpe_proto)
+udp_table:add(19135,mcpe_proto)
