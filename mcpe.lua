@@ -198,7 +198,7 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "RemoveEntityPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				part:add(data(i,4), "Byte: " .. data(i,4):uint())
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
 				i = i + 4
 				
 			elseif data(i,1):uint() == 0x8e then
@@ -403,8 +403,20 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				i = i + 4
 				part:add(data(i,4), "Z: " .. data(i,4):uint())
 				i = i + 4
-				
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,4), "Unknown: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,2), "Block ID: " .. data(i,2):uint())
+				i = i + 2
+				part:add(data(i,1), "Block Data: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Float: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Float: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Float: " .. data(i,4):float())
+				i = i + 4
 				
 			elseif data(i,1):uint() == 0xa2 then
 				part = subtree:add(data(i,plength), "PlayerActionPacket")
@@ -448,7 +460,10 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "AnimatePacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
 				
 			elseif data(i,1):uint() == 0xa8 then
 				part = subtree:add(data(i,plength), "RespawnPacket")
