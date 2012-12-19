@@ -186,7 +186,10 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "RemovePlayerPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,8), "Client ID: " .. data(i,8))
+				i = i + 8
 				
 			elseif data(i,1):uint() == 0x8c then
 				part = subtree:add(data(i,plength), "AddEntityPacket")
@@ -380,7 +383,12 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "PlayerEquipmentPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,2), "Block ID: " .. data(i,2):uint())
+				i = i + 2
+				part:add(data(i,2), "Block Data: " .. data(i,2):uint())
+				i = i + 2
 				
 			elseif data(i,1):uint() == 0xa0 then
 				part = subtree:add(data(i,plength), "InteractPacket")
