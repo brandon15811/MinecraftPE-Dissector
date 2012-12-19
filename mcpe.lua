@@ -107,18 +107,27 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				i = i + 4
 				part:add(data(i,4), "Int: " .. data(i,4))
 				
+			elseif data(i,1):uint() == 0x83 then
+				part = subtree:add(data(i,plength), "LoginStatusPacket")
+				dataStart(part,data,iS,idp)
+				i = i + 1
+				part:add(data(i,4), "Int: " .. data(i,4):uint())
+				i = i + 4
+				
 			elseif data(i,1):uint() == 0x84 then
 				part = subtree:add(data(i,plength), "ReadyPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1				
-				part:add(data(i,1), "Byte: " .. data(i+7,1))
+				part:add(data(i,1), "Byte: " .. data(i,1))
 				i = i + 1
 				
 			elseif data(i,1):uint() == 0x85 then
 				part = subtree:add(data(i,plength), "MessagePacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1				
-				pinfo.cols.info:append(" <-- Unknown!!")
+				slength = data(i,2):uint()
+				getString(part,data,i)
+				i = i + slength + 2
 				
 			elseif data(i,1):uint() == 0x86 then
 				part = subtree:add(data(i,plength), "SetTimePacket")
@@ -133,7 +142,20 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "StartGamePacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,4), "Seed: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Unknown: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Gamemode: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "X: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Y: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):float())
+				i = i + 4
 				
 			elseif data(i,1):uint() == 0x88 then
 				part = subtree:add(data(i,plength), "AddMobPacket")
@@ -143,9 +165,22 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				
 			elseif data(i,1):uint() == 0x89 then
 				part = subtree:add(data(i,plength), "AddPlayerPacket")
-				dataStart(part,data,iS,idp);
+				dataStart(part,data,iS,idp)
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,8), "Client iD: " .. data(i,8))	
+				i = i + 8		
+				slength = data(i,2):uint()
+				getString(part,data,i)
+				i = i + slength + 2
+				part:add(data(i+slength,4), "Entity ID: " .. data(i+slength,4):uint())
+				i = i + 4
+				part:add(data(i,4), "X: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Y: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):float())
+				i = i + 4
+				pinfo.cols.info:append(" <-- Stuff missing!!")
 				
 			elseif data(i,1):uint() == 0x8a then
 				part = subtree:add(data(i,plength), "RemovePlayerPacket")
@@ -228,17 +263,17 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "MovePlayerPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				part:add(buffer(i,4), "Unknown: " .. buffer(i,4))
+				part:add(data(i,4), "Unknown: " .. data(i,4))
 				i = i + 4
-				part:add(buffer(i,4), "Pos X: " .. buffer(i,4):float())
+				part:add(data(i,4), "Pos X: " .. data(i,4):float())
 				i = i + 4
-				part:add(buffer(i,4), "Pos Y: " .. buffer(i,4):float())
+				part:add(data(i,4), "Pos Y: " .. data(i,4):float())
 				i = i + 4
-				part:add(buffer(i,4), "Pos Z: " .. buffer(i,4):float())
+				part:add(data(i,4), "Pos Z: " .. data(i,4):float())
 				i = i + 4
-				part:add(buffer(i,4), "Yaw: " .. buffer(i,4):float())
+				part:add(data(i,4), "Yaw: " .. data(i,4):float())
 				i = i + 4
-				part:add(buffer(i,4), "Pitch: " .. buffer(i,4):float())
+				part:add(data(i,4), "Pitch: " .. data(i,4):float())
 				i = i + 4
 				
 				
@@ -278,7 +313,16 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "UpdateBlockPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,4), "X: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,1), "Y: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,1), "Block ID: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,1), "Block Data: " .. data(i,1):uint())
+				i = i + 1
 				
 			elseif data(i,1):uint() == 0x98 then
 				part = subtree:add(data(i,plength), "AddPaintingPacket")
@@ -342,12 +386,24 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "InteractPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,2), "Block ID: " .. data(i,2):uint())
+				i = i + 2
+				part:add(data(i,2), "Block Data: " .. data(i,2):uint())
+				i = i + 2
 				
 			elseif data(i,1):uint() == 0xa1 then
 				part = subtree:add(data(i,plength), "UseItemPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
+				part:add(data(i,4), "X: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Y: " .. data(i,4):uint())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):uint())
+				i = i + 4
+				
 				pinfo.cols.info:append(" <-- Unknown!!")
 				
 			elseif data(i,1):uint() == 0xa2 then
@@ -524,61 +580,6 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				i = i + 8
 				part:add(data(i,8), "Unknown: " .. data(i,8))
 				i = i + 8
-				
-			elseif data(i,1):uint() == 0x83 then
-				part = subtree:add(data(i,plength), "LoginStatusPacket")
-				dataStart(part,data,iS,idp)
-				i = i + 1
-				part:add(data(i,4), "Int: " .. data(i,4):uint())
-				i = i + 4
-			elseif data(i,1):uint() == 0x86 then
-				part = subtree:add(data(i,plength), "SetTimePacket")
-				dataStart(part,data,iS,idp)
-				i = i + 1
-				part:add(data(i,2), "Short: " .. data(i,2):uint())	
-				i = i + 2
-				part:add(data(i,2), "Short: " .. data(i,2):uint())
-				i = i + 2
-					
-			elseif data(i,1):uint() == 0x87 then
-				part = subtree:add(data(i,plength), "StartGamePacket")
-				dataStart(part,data,iS,idp)
-				i = i + 1
-				part:add(data(i,4), "Seed: " .. data(i,4):uint())	
-				i = i + 4
-				part:add(data(i,4), "Unknown: " .. data(i,4):uint())
-				i = i + 4
-				part:add(data(i,4), "Game Mode: " .. data(i,4):uint())
-				i = i + 4
-				part:add(data(i,4), "Unknown: " .. data(i,4):uint())
-				i = i + 4
-				part:add(data(i,4), "X: " .. data(i,4):float())
-				i = i + 4
-				part:add(data(i,4), "Y: " .. data(i,4):float())
-				i = i + 4
-				part:add(data(i,4), "Z: " .. data(i,4):float())
-				i = i + 4
-				
-			elseif data(i,1):uint() == 0x89 then
-				part = subtree:add(data(i,plength), "AddPlayerPacket")
-				dataStart(part,data,iS,idp)
-				i = i + 1
-				part:add(data(i,8), "Client iD: " .. data(i,8))	
-				i = i + 8
-				slength = data(i,2):uint()
-				part:add(data(i,2), "Length: " .. slength)
-				i = i + 2
-				part:add(data(i,slength), "Name: " .. data(i,slength):string())
-				i = i + slenght
-				part:add(data(i+slength,4), "Entity ID: " .. data(i+slength,4):uint())
-				i = i + 4
-				part:add(data(i,4), "X: " .. data(i,4):float())
-				i = i + 4
-				part:add(data(i,4), "Y: " .. data(i,4):float())
-				i = i + 4
-				part:add(data(i,4), "Z: " .. data(i,4):float())
-				i = i + 4
-				pinfo.cols.info:append(" <-- Stuff missing!!")
 				
 			elseif data(i,1):uint() == 0x9e then
 				part = subtree:add(data(i,plength), "ChunkDataPacket")
