@@ -74,7 +74,7 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 		    getTime:add(buffer(4,3),"Packet number: " .. buffer(4,3):le_uint())
 	        getTime:add(buffer(7,3),"Packet number: " .. buffer(7,3):le_uint())
 	    end
-	elseif (packetID:uint() == 0x80 or packetID:uint() == 0x84 or packetID:uint() == 0x88 or packetID:uint() == 0x8c) then
+	elseif (packetID:uint() >= 0x80 or packetID:uint() <= 0x8f) then
 		subtree:add(buffer(1,3), "Packet number: " .. buffer(1,3):le_uint())
 		data = buffer(4,-1)
 		len = data:len() -4
