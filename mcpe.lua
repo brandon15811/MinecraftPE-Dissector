@@ -501,7 +501,8 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "ContainerClosePacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,1), "Byte: " .. data(i,1):uint())
+				i = i + 1
 				
 			elseif data(i,1):uint() == 0xad then
 				part = subtree:add(data(i,plength), "ContainerSetSlotPacket")
@@ -537,7 +538,22 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "SignUpdatePacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
-				pinfo.cols.info:append(" <-- Unknown!!")
+				part:add(data(i,2), "X: " .. data(i,2):uint())
+				i = i + 2
+				part:add(data(i,1), "Y: " .. data(i,1):uint())
+				i = i + 1
+				part:add(data(i,2), "Z: " .. data(i,2):uint())
+				i = i + 2
+				
+				for a=1,4,1 do
+					slength = data(i,2):le_uint()
+					part:add(data(i,2), "Length: " .. slength)
+					i = i + 2
+					if slength > 0 then
+						part:add(data(i,slength), "Line "..a..": " .. data(i,slength):string())
+						i = i + slength
+					end
+				end
 				
 			elseif data(i,1):uint() == 0xb3 then
 				part = subtree:add(data(i,plength), "AdventureSettingsPacket")
