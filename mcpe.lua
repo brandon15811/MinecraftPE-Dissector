@@ -161,6 +161,16 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 				part = subtree:add(data(i,plength), "AddMobPacket")
 				dataStart(part,data,iS,idp);
 				i = i + 1
+				part:add(data(i,4), "Entity ID: " .. data(i,4):uint())
+				i = i + 4
+				getMobName(part,data,i)
+				i = i + 4
+				part:add(data(i,4), "X: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Y: " .. data(i,4):float())
+				i = i + 4
+				part:add(data(i,4), "Z: " .. data(i,4):float())
+				i = i + 4
 				pinfo.cols.info:append(" <-- Unknown!!")
 				
 			elseif data(i,1):uint() == 0x89 then
@@ -664,6 +674,23 @@ function dataStart(tree,data,i,idp)
 		i = i + 10
 	end
 	tree:add(data(i,1), "MCPE ID: " .. data(i,1))
+end
+
+function getMobName(part,data,i)
+	a = data(i,4):uint()
+	name = "Unknown name"
+	if a == 0x20 then
+		name = "Zombie"
+	elseif a == 0x21 then
+		name = "Creeper"
+	elseif a == 0x22 then
+		name = "Skeleton"
+	elseif a == 0x23 then
+		name = "Spider"
+	elseif a == 0x24 then
+		name = "Zombie Pigman"
+	end
+	part:add(data(i,4), "Mob Type: " .. name)
 end
 
 udp_table = DissectorTable.get("udp.port")
