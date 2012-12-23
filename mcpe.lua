@@ -3,16 +3,16 @@ mcpe_proto = Proto("MCPE","MCPE Protocol")
 local subtree
 
 function mcpe_proto.dissector(buffer,pinfo,tree)
-    pinfo.cols.protocol = "MCPE"
-    
-    local packetID = buffer(0,1)
-    local length = buffer:len()
-    
-    pinfo.cols.info = "Data 0x" .. packetID
-    subtree = tree:add(mcpe_proto,buffer(),"Data 0x" .. packetID)
-    subtree:add(packetID,"Data Length: " .. length)
-    subtree:add(buffer(0,1), "Packet ID: 0x" ..buffer(0,1))
-    
+	pinfo.cols.protocol = "MCPE"
+	
+	local packetID = buffer(0,1)
+	local length = buffer:len()
+	
+	pinfo.cols.info = "Data 0x" .. packetID
+	subtree = tree:add(mcpe_proto,buffer(),"Data 0x" .. packetID)
+	subtree:add(packetID,"Data Length: " .. length)
+	subtree:add(buffer(0,1), "Packet ID: 0x" ..buffer(0,1))
+	
 	if (packetID:uint() == 0x02) then
 		pinfo.cols.info = "ID_UNCONNECTED_PING_OPEN_CONNECTIONS: 0x02"
 		subtree:add(buffer(1,8),"Ping ID: " .. buffer(1,8))
@@ -28,52 +28,52 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 	elseif (packetID:uint() == 0x05) then
 		pinfo.cols.info = "ID_OPEN_CONNECTION_REQUEST_1: 0x05"
 		subtree:add(buffer(1,16),"Magic: " .. buffer(1,16))
-    	subtree:add(buffer(17,1),"Protocol version: " .. buffer(17,1))
-    	subtree:add(buffer(18,-1),"Null Payload")
+		subtree:add(buffer(17,1),"Protocol version: " .. buffer(17,1))
+		subtree:add(buffer(18,-1),"Null Payload")
 	elseif (packetID:uint() == 0x06) then
 		pinfo.cols.info = "ID_OPEN_CONNECTION_REPLY_1: 0x06"
 		subtree:add(buffer(1,16),"Magic: " .. buffer(1,16))
-    	subtree:add(buffer(17,8),"Server ID: " .. buffer(17,8))
-    	subtree:add(buffer(25,1),"Server security: " .. buffer(25,1))
-    	subtree:add(buffer(26,-1),"MTU Size: " .. buffer(26,-1):uint())
+		subtree:add(buffer(17,8),"Server ID: " .. buffer(17,8))
+		subtree:add(buffer(25,1),"Server security: " .. buffer(25,1))
+		subtree:add(buffer(26,-1),"MTU Size: " .. buffer(26,-1):uint())
 	elseif (packetID:uint() == 0x07) then
 		pinfo.cols.info = "ID_OPEN_CONNECTION_REQUEST_2: 0x07"
 		subtree:add(buffer(1,16),"Magic: " .. buffer(1,16))
-    	subtree:add(buffer(17,5),"Sercurity + Cookie: " .. buffer(17,5))
-	    subtree:add(buffer(22,2),"Server Port: " .. buffer(22,2):uint())
-	    subtree:add(buffer(24,2),"MTU Size: " .. buffer(24,2):uint())
-	    subtree:add(buffer(26,8),"Client ID: " .. buffer(26,8))
+		subtree:add(buffer(17,5),"Sercurity + Cookie: " .. buffer(17,5))
+		subtree:add(buffer(22,2),"Server Port: " .. buffer(22,2):uint())
+		subtree:add(buffer(24,2),"MTU Size: " .. buffer(24,2):uint())
+		subtree:add(buffer(26,8),"Client ID: " .. buffer(26,8))
 	elseif (packetID:uint() == 0x08) then
 		pinfo.cols.info = "ID_OPEN_CONNECTION_REPLY_2: 0x08"
 		subtree:add(buffer(1,16),"Magic: " .. buffer(1,16))
-    	subtree:add(buffer(17,8),"Server ID: " .. buffer(17,8))
-    	subtree:add(buffer(25,2),"Client port: " .. buffer(25,2):uint())
-    	subtree:add(buffer(27,2),"MTU Size: " .. buffer(27,2):uint())
-    	subtree:add(buffer(29,1),"Security: " .. buffer(29,1))
+		subtree:add(buffer(17,8),"Server ID: " .. buffer(17,8))
+		subtree:add(buffer(25,2),"Client port: " .. buffer(25,2):uint())
+		subtree:add(buffer(27,2),"MTU Size: " .. buffer(27,2):uint())
+		subtree:add(buffer(29,1),"Security: " .. buffer(29,1))
 	elseif (packetID:uint() == 0xa0) then
 		pinfo.cols.info = "NACK Packet: 0xa0"
 		subtree:add(buffer(1,2),"Unknown: " .. buffer(1,2))
    	 	subtree:add(buffer(3,1),"Additional Packet: " .. buffer(3,1))
-	    if(buffer(3,1):uint() == 0x01) then  
-	        subtree:add(buffer(4,-1),"Packet number: " .. buffer(4,-1):le_uint())
-	    else
-	        pinfo.cols.info:append(" Multiple")
-	        getTime = subtree:add(buffer(4,6),"Multiple nack's") 
-		    getTime:add(buffer(4,3),"Packet number: " .. buffer(4,3):le_uint())
-	        getTime:add(buffer(7,3),"Packet number: " .. buffer(7,3):le_uint())
-	    end
+		if(buffer(3,1):uint() == 0x01) then  
+			subtree:add(buffer(4,-1),"Packet number: " .. buffer(4,-1):le_uint())
+		else
+			pinfo.cols.info:append(" Multiple")
+			getTime = subtree:add(buffer(4,6),"Multiple nack's") 
+			getTime:add(buffer(4,3),"Packet number: " .. buffer(4,3):le_uint())
+			getTime:add(buffer(7,3),"Packet number: " .. buffer(7,3):le_uint())
+		end
 	elseif (packetID:uint() == 0xc0) then
 		pinfo.cols.info = "ACK Packet: 0xc0"
 		subtree:add(buffer(1,2),"Unknown: " .. buffer(1,2))
    	 	subtree:add(buffer(3,1),"Additional Packet: " .. buffer(3,1))
-	    if(buffer(3,1):uint() == 0x01) then  
-	        subtree:add(buffer(4,-1),"Packet number: " .. buffer(4,-1):le_uint())
-	    else
-	        pinfo.cols.info:append(" Multiple")
-	        getTime = subtree:add(buffer(4,6),"Multiple ack's") 
-		    getTime:add(buffer(4,3),"Packet number: " .. buffer(4,3):le_uint())
-	        getTime:add(buffer(7,3),"Packet number: " .. buffer(7,3):le_uint())
-	    end
+		if(buffer(3,1):uint() == 0x01) then  
+			subtree:add(buffer(4,-1),"Packet number: " .. buffer(4,-1):le_uint())
+		else
+			pinfo.cols.info:append(" Multiple")
+			getTime = subtree:add(buffer(4,6),"Multiple ack's") 
+			getTime:add(buffer(4,3),"Packet number: " .. buffer(4,3):le_uint())
+			getTime:add(buffer(7,3),"Packet number: " .. buffer(7,3):le_uint())
+		end
 	elseif (packetID:uint() >= 0x80 or packetID:uint() <= 0x8f) then
 		subtree:add(buffer(1,3), "Packet number: " .. buffer(1,3):le_uint())
 		data = buffer(4,-1)
@@ -544,8 +544,8 @@ function mcpe_proto.dissector(buffer,pinfo,tree)
 			total = total + 1
 		end
 		pinfo.cols.info:append(" (" .. total .. ")")
-    end
-    
+	end
+	
 end
 
 function getString(tree,data,i,name)
